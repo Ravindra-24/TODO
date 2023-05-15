@@ -7,14 +7,8 @@ const todo = [{
 */
 const body = document.querySelector("body");
 const handleTheme = () => {
-  if(body.classList.contains("dark")){
-    body.classList.remove("dark");
-    body.classList.add("light");
-    localStorage.setItem("theme", "light");
-}else{
-    body.classList.add("dark");
-    body.classList.remove("light");
-}}
+body.classList.toggle("dark");
+}
 
 const todoContainer = document.querySelector("#todo-container");
 const input = document.querySelector("#add-todo");
@@ -161,12 +155,13 @@ const renderList = () => {
       todoElement.innerHTML = listItemComplete(todo.text);
     } else {
       todoElement.innerHTML = listItem(todo.text);
+      showEdit(todoElement, todo.id);
     }
     todoContainer.appendChild(todoElement);
 
     handleDelete(todoElement, todo.id);
     handleCompleted(todoElement, todo.id);
-    showEdit(todoElement, todo.id);
+    
   });
 };
 
