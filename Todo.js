@@ -5,9 +5,33 @@ const todo = [{
     id: string
 }]
 */
+// console.log(navigator);
+// navigator.geolocation.getCurrentPosition((position) => {
+//   console.log(`position`,position);
+// })
+// navigator.mediaDevices.getUserMedia({ audio: true, video: true }).then((stream) => {
+//   console.log(`stream`, stream);
+// })
+
+// const query = prompt("what is my name")
+// console.log(query);
+
 const body = document.querySelector("body");
+    const theme = ()=>{
+      const currentTheme = localStorage.getItem('theme');
+    if(currentTheme === "dark"){
+        body.classList.add('dark');
+        body.classList.remove("light");
+    }else{
+      body.classList.add("light");
+      body.classList.remove("dark");
+    }}
+theme()
+
+
 const handleTheme = () => {
 body.classList.toggle("dark");
+ localStorage.setItem('theme', body.classList.contains('dark') ? 'dark' : 'light');
 }
 
 const todoContainer = document.querySelector("#todo-container");
@@ -92,9 +116,25 @@ const listItem = (
                 </div>
             </div>`;
 
-const todos = [];
-
 let idOfElementToEdit = null;
+let todos;
+const key = 'key'
+
+const updateTodoInStorage = (todoList) => {
+  const todoString = JSON.stringify(todoList);
+  localStorage.setItem(key, todoString);
+};
+
+const initializa = ()=>{
+  const data = localStorage.getItem(key);
+  if(!data){
+    todos = [];
+  }else{
+    todos = JSON.parse(data);
+    renderList(todos);
+    return;
+  }
+}
 
 const handleCompleted = (todoElement, id) => {
   const completedTask = todoElement.querySelector(".completed");
@@ -102,6 +142,7 @@ const handleCompleted = (todoElement, id) => {
     const element = todos.find((todo) => todo.id === id);
     element.completed = !element.completed;
     renderList();
+    updateTodoInStorage(todos)
   });
 }
 
@@ -126,9 +167,11 @@ const handleEdit = () => {
   }else {
     element.text = newtodos;
   input.value = "";
+  heading.innerHTML = "Todo list";
   addbutton.style = "display: inline";
   saveButton.style = "display: none";
   renderList();
+  updateTodoInStorage(todos);
   }
   
 }
@@ -142,12 +185,13 @@ const handleDelete = (todoElement, id) => {
     listState.innerHTML =
       todos.length >= 1 ? `Hello, here are your latest` : `Hey, add a todo!`;
     renderList();
+    updateTodoInStorage(todos)
   });
 };
 
 
 
-const renderList = () => {
+function renderList() {
   todoContainer.innerHTML = "";
   todos.forEach((todo) => {
     const todoElement = document.createElement("div");
@@ -173,6 +217,7 @@ const handleAdd = (e) => {
       completed: false,
       id: Date.now(),
     });
+    updateTodoInStorage(todos);
     input.value = "";
     listState.innerHTML =
       todos.length >= 1 ? `Hello, here are your latest` : `Hey, add a todo!`;
@@ -183,5 +228,8 @@ const handleAdd = (e) => {
   }
 };
 
+
 addbutton.addEventListener("click", handleAdd);
 saveButton.addEventListener("click", handleEdit);
+
+initializa();
